@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TNGL Customer Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 20px;
+        }
+        .customer-form {
+            margin-bottom: 20px;
+        }
+
+        .customer-list {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>TNGL Customer Management</h2>
+
+        <div class="customer-form">
+            <h3>Create/Update Customer</h3>
+            <form id="customerForm">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <input type="text" class="form-control" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerNumber">Customer Number:</label>
+                    <input type="text" class="form-control" id="customerNumber" required pattern="[0-9]{10}">
+                </div>
+                <div class="form-group">
+                    <label for="meterSerialNumber">Meter Serial Number:</label>
+                    <input type="text" class="form-control" id="meterSerialNumber" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="createOrUpdateCustomer()" title="For update CustomerDetails use the Customer Number">Create/Update Customer</button>
+        
+            </form>
+        </div>
+
+        <div class="customer-list">
+            <h3>Customer List</h3>
+            <ul id="customerList" class="list-group">
+                <!-- Customer list will be displayed here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        var customers = [];
+
+        function createOrUpdateCustomer() {
+            var name = document.getElementById('name').value;
+            var address = document.getElementById('address').value;
+            var customerNumber = document.getElementById('customerNumber').value;
+            var meterSerialNumber = document.getElementById('meterSerialNumber').value;
+
+            var existingCustomer = customers.find(function(customer) {
+                return customer['Customer Number'] === customerNumber;
+            });
+
+            if (existingCustomer) {
+                // Update existing customer
+                existingCustomer['Name'] = name;
+                existingCustomer['Address'] = address;
+                existingCustomer['Meter Serial Number'] = meterSerialNumber;
+            } else {
+                // Create new customer
+                var newCustomer = {
+                    'Name': name,
+                    'Address': address,
+                    'Customer Number': customerNumber,
+                    'Meter Serial Number': meterSerialNumber
+                };
+                customers.push(newCustomer);
+            }
+
+            updateCustomerList();
+            clearForm();
+        }
+
+        function deleteCustomer(customerNumber) {
+            customers = customers.filter(function(customer) {
+                return customer['Customer Number'] !== customerNumber;
+            });
+
+            updateCustomerList();
+        }
+
+        function updateCustomerList() {
+            var customerListElement = document.getElementById('customerList');
+            customerListElement.innerHTML = '';
+
+            customers.forEach(function(customer) {
+                var listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.innerHTML = `<strong>${customer['Name']}</strong> - ${customer['Address']}, ${customer['Customer Number']}, ${customer['Meter Serial Number']}
+                <button type="button" class="btn btn-danger btn-sm float-right" onclick="deleteCustomer('${customer['Customer Number']}')">Delete</button>`;
+                customerListElement.appendChild(listItem);
+            });
+        }
+
+        function clearForm() {
+            document.getElementById('customerForm').reset();
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
